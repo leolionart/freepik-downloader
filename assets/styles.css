@@ -150,6 +150,35 @@ textarea {
   color: var(--muted-foreground);
 }
 
+textarea::placeholder,
+input::placeholder {
+  color: var(--muted-foreground);
+  opacity: 1; /* Safari */
+}
+
+/* Fix for Safari Mobile date input placeholder */
+input[type="date"] {
+  position: relative;
+  min-height: 44px; /* Ensure enough height for touch */
+}
+
+input[type="date"]::before {
+  content: attr(placeholder);
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted-foreground);
+  pointer-events: none;
+  transition: opacity 160ms ease;
+}
+
+input[type="date"]:focus::before,
+input[type="date"]:not(:placeholder-shown)::before,
+input[type="date"]:valid::before {
+  opacity: 0;
+}
+
 textarea,
 input {
   width: 100%;

@@ -1,7 +1,12 @@
 const COOKIE_NAME = "freepik_api_key";
 const HISTORY_KEY = "freepik_download_history";
+const HISTORY_DB_NAME = "freepik_downloads";
+const HISTORY_DB_VERSION = 1;
+const HISTORY_FILE_STORE = "history_files";
 const ONE_YEAR_SECONDS = 60 * 60 * 24 * 365;
-const MAX_HISTORY_ITEMS = 12;
+const MAX_HISTORY_ITEMS = 50;
+const HISTORY_RETENTION_DAYS = 90;
+const HISTORY_RETENTION_MS = HISTORY_RETENTION_DAYS * 24 * 60 * 60 * 1000;
 
 const apiKeyInput = document.querySelector("#apiKeyInput");
 const keyBadge = document.querySelector("#keyBadge");
@@ -17,10 +22,18 @@ const clearHistoryButton = document.querySelector("#clearHistoryButton");
 const messageBar = document.querySelector("#messageBar");
 const queueCount = document.querySelector("#queueCount");
 const queueList = document.querySelector("#queueList");
+const historySearchInput = document.querySelector("#historySearchInput");
+const historyFromDateInput = document.querySelector("#historyFromDate");
+const historyToDateInput = document.querySelector("#historyToDate");
+const clearHistoryFiltersButton = document.querySelector("#clearHistoryFiltersButton");
+const historyRetentionNote = document.querySelector("#historyRetentionNote");
+const historySummary = document.querySelector("#historySummary");
 const historyList = document.querySelector("#historyList");
 
 let queueItems = [];
+let historyItems = [];
 let hasAutoRun = false;
+let historyDbPromise = null;
 
 function getCookie(name) {
   const target = `${name}=`;
@@ -119,43 +132,170 @@ function writeHistory(items) {
   localStorage.setItem(HISTORY_KEY, JSON.stringify(items.slice(0, MAX_HISTORY_ITEMS)));
 }
 
-function addHistoryEntry(item) {
-  const next = [
-    {
-      id: item.id,
-      title: item.title,
-      filename: item.filename,
-      downloadedAt: new Date().toISOString(),
-    },
-    ...readHistory().filter((entry) => entry.id !== item.id),
-  ];
-  writeHistory(next);
-  renderHistory();
+function openHistoryDb() {
+  if (historyDbPromise) {
+    return historyDbPromise;
+  }
+
+  historyDbPromise = new Promise((resolve, reject) => {
+    const request = window.indexedDB.open(HISTORY_DB_NAME, HISTORY_DB_VERSION);
+
+    request.addEventListener("upgradeneeded", () => {
+      const db = request.result;
+      if (!db.objectStoreNames.contains(HISTORY_FILE_STORE)) {
+        db.createObjectStore(HISTORY_FILE_STORE);
+      }
+    });
+
+    request.addEventListener("success", () => resolve(request.result));
+    request.addEventListener("error", () => reject(request.error || new Error("Không mở được IndexedDB.")));
+  });
+
+  return historyDbPromise;
 }
 
-function renderHistory() {
-  const items = readHistory();
+async function runHistoryStoreRequest(mode, operation) {
+  const db = await openHistoryDb();
 
-  if (!items.length) {
-    historyList.className = "stack-list empty-state";
-    historyList.innerHTML = "<p>Chưa có file nào được tải gần đây.</p>";
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(HISTORY_FILE_STORE, mode);
+    const store = transaction.objectStore(HISTORY_FILE_STORE);
+    let request;
+
+    try {
+      request = operation(store);
+    } catch (error) {
+      reject(error);
+      return;
+    }
+
+    request.addEventListener("success", () => resolve(request.result));
+    request.addEventListener("error", () => reject(request.error || new Error("IndexedDB request lỗi.")));
+    transaction.addEventListener("abort", () => {
+      reject(transaction.error || new Error("IndexedDB transaction bị hủy."));
+    });
+  });
+}
+
+function normalizeHistoryEntry(entry) {
+  if (!entry || !entry.id) {
+    return null;
+  }
+
+  const downloadedAt = entry.downloadedAt || new Date().toISOString();
+  const size = Number(entry.size);
+  const storageKey = String(entry.storageKey || "");
+
+  return {
+    id: String(entry.id),
+    title: entry.title || "",
+    filename: entry.filename || `resource-${entry.id}`,
+    downloadedAt,
+    storageKey,
+    hasLocalFile: Boolean(storageKey && entry.hasLocalFile),
+    size: Number.isFinite(size) && size > 0 ? size : 0,
+  };
+}
+
+function pruneHistoryItems(items) {
+  const cutoff = Date.now() - HISTORY_RETENTION_MS;
+
+  return items
+    .map(normalizeHistoryEntry)
+    .filter(Boolean)
+    .filter((entry) => {
+      const timestamp = new Date(entry.downloadedAt).getTime();
+      return Number.isFinite(timestamp) && timestamp >= cutoff;
+    })
+    .sort((left, right) => new Date(right.downloadedAt).getTime() - new Date(left.downloadedAt).getTime())
+    .slice(0, MAX_HISTORY_ITEMS);
+}
+
+async function saveHistoryFile(storageKey, blob) {
+  await runHistoryStoreRequest("readwrite", (store) => store.put(blob, storageKey));
+}
+
+async function getHistoryFile(storageKey) {
+  return runHistoryStoreRequest("readonly", (store) => store.get(storageKey));
+}
+
+async function deleteHistoryFile(storageKey) {
+  if (!storageKey) {
     return;
   }
 
-  historyList.className = "stack-list";
-  historyList.innerHTML = items
-    .map(
-      (item) => `
-        <article class="history-card">
-          <div>
-            <p class="history-title">${escapeHtml(item.title || item.filename || `Resource ${item.id}`)}</p>
-            <p class="history-meta">ID ${escapeHtml(item.id)} • ${escapeHtml(item.filename || "downloaded file")}</p>
-          </div>
-          <time class="history-time">${formatDate(item.downloadedAt)}</time>
-        </article>
-      `,
-    )
-    .join("");
+  await runHistoryStoreRequest("readwrite", (store) => store.delete(storageKey));
+}
+
+async function clearHistoryFiles() {
+  await runHistoryStoreRequest("readwrite", (store) => store.clear());
+}
+
+async function syncHistory(items, previousItems = readHistory()) {
+  const nextItems = pruneHistoryItems(items);
+  const nextStorageKeys = new Set(nextItems.map((entry) => entry.storageKey).filter(Boolean));
+  const removedKeys = previousItems
+    .map((entry) => String(entry?.storageKey || ""))
+    .filter((storageKey) => storageKey && !nextStorageKeys.has(storageKey));
+
+  await Promise.all(removedKeys.map((storageKey) => deleteHistoryFile(storageKey)));
+  writeHistory(nextItems);
+  historyItems = nextItems;
+  renderHistory();
+}
+
+async function addHistoryEntry(item, blob) {
+  const previousItems = readHistory();
+  const storageKey = `resource:${item.id}:${Date.now()}`;
+
+  await saveHistoryFile(storageKey, blob);
+  await syncHistory(
+    [
+      {
+        id: item.id,
+        title: item.title,
+        filename: item.filename,
+        downloadedAt: new Date().toISOString(),
+        storageKey,
+        hasLocalFile: true,
+        size: blob.size,
+      },
+      ...previousItems.filter((entry) => entry.id !== item.id),
+    ],
+    previousItems,
+  );
+}
+
+function getHistoryFilters() {
+  return {
+    query: historySearchInput.value.trim().toLowerCase(),
+    fromDate: historyFromDateInput.value,
+    toDate: historyToDateInput.value,
+  };
+}
+
+function getFilteredHistoryItems() {
+  const filters = getHistoryFilters();
+  const fromTimestamp = filters.fromDate ? new Date(`${filters.fromDate}T00:00:00`).getTime() : null;
+  const toTimestamp = filters.toDate ? new Date(`${filters.toDate}T23:59:59.999`).getTime() : null;
+
+  return historyItems.filter((item) => {
+    const haystack = [item.title, item.filename, item.id].join(" ").toLowerCase();
+    if (filters.query && !haystack.includes(filters.query)) {
+      return false;
+    }
+
+    const downloadedAt = new Date(item.downloadedAt).getTime();
+    if (fromTimestamp && downloadedAt < fromTimestamp) {
+      return false;
+    }
+
+    if (toTimestamp && downloadedAt > toTimestamp) {
+      return false;
+    }
+
+    return true;
+  });
 }
 
 function formatDate(value) {
@@ -167,6 +307,116 @@ function formatDate(value) {
   } catch {
     return value;
   }
+}
+
+function formatFileSize(value) {
+  if (!value) {
+    return "Chưa có dung lượng";
+  }
+
+  const units = ["B", "KB", "MB", "GB"];
+  let size = value;
+  let unitIndex = 0;
+
+  while (size >= 1024 && unitIndex < units.length - 1) {
+    size /= 1024;
+    unitIndex += 1;
+  }
+
+  const rounded = size >= 10 || unitIndex === 0 ? size.toFixed(0) : size.toFixed(1);
+  return `${rounded} ${units[unitIndex]}`;
+}
+
+function downloadBlob(blob, filename) {
+  const objectUrl = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = objectUrl;
+  anchor.download = filename;
+  document.body.append(anchor);
+  anchor.click();
+  anchor.remove();
+  setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+}
+
+function parseEncodedHeader(value) {
+  if (!value) {
+    return "";
+  }
+
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
+function parseFilenameFromContentDisposition(headerValue) {
+  if (!headerValue) {
+    return "";
+  }
+
+  const utf8Match = headerValue.match(/filename\*=UTF-8''([^;]+)/i);
+  if (utf8Match) {
+    return parseEncodedHeader(utf8Match[1]);
+  }
+
+  const plainMatch = headerValue.match(/filename="([^"]+)"/i) || headerValue.match(/filename=([^;]+)/i);
+  return plainMatch ? plainMatch[1].trim() : "";
+}
+
+function renderHistory() {
+  const filteredItems = getFilteredHistoryItems();
+
+  if (historyRetentionNote) {
+    historyRetentionNote.textContent = `Lịch sử lưu cục bộ tối đa ${HISTORY_RETENTION_DAYS} ngày hoặc ${MAX_HISTORY_ITEMS} file gần nhất.`;
+  }
+
+  if (historySummary) {
+    historySummary.textContent = `${filteredItems.length}/${historyItems.length} bản ghi`;
+  }
+
+  if (!historyItems.length) {
+    historyList.className = "stack-list empty-state";
+    historyList.innerHTML = "<p>Chưa có file nào được tải gần đây.</p>";
+    return;
+  }
+
+  if (!filteredItems.length) {
+    historyList.className = "stack-list empty-state";
+    historyList.innerHTML = "<p>Không có kết quả khớp với bộ lọc hiện tại.</p>";
+    return;
+  }
+
+  historyList.className = "stack-list";
+  historyList.innerHTML = filteredItems
+    .map(
+      (item) => `
+        <article class="history-card">
+          <div class="history-main">
+            <p class="history-title">${escapeHtml(item.title || item.filename || `Resource ${item.id}`)}</p>
+            <p class="history-meta">ID ${escapeHtml(item.id)} • ${escapeHtml(item.filename || "downloaded file")}</p>
+            <p class="history-meta">${escapeHtml(formatFileSize(item.size))} • ${
+              item.hasLocalFile ? "Đã cache local" : "Bản cũ chưa có file local"
+            }</p>
+          </div>
+          <div class="history-side">
+            <time class="history-time">${formatDate(item.downloadedAt)}</time>
+            <div class="history-actions">
+              <button
+                class="btn btn-secondary"
+                type="button"
+                data-action="redownload"
+                data-storage-key="${escapeHtml(item.storageKey)}"
+                ${item.hasLocalFile ? "" : "disabled"}
+              >
+                Tải lại
+              </button>
+            </div>
+          </div>
+        </article>
+      `,
+    )
+    .join("");
 }
 
 function parseInputList() {
@@ -363,37 +613,75 @@ async function downloadItem(id) {
   updateQueueItem(id, { status: "downloading" });
 
   try {
-    const response = await fetch(`/api/download/${id}`);
-    const payload = await response.json();
+    const response = await fetch(`/api/download/${id}?mode=file`);
+    if (!response.ok) {
+      const contentType = response.headers.get("content-type") || "";
+      if (contentType.includes("application/json")) {
+        const payload = await response.json();
+        throw new Error(payload.error || "Không lấy được file tải.");
+      }
 
-    if (!response.ok || !payload.ok || !payload.downloadUrl) {
-      throw new Error(payload.error || "Không lấy được download URL.");
+      throw new Error((await response.text()) || "Không lấy được file tải.");
     }
 
-    const anchor = document.createElement("a");
-    anchor.href = payload.downloadUrl;
-    anchor.target = "_blank";
-    anchor.rel = "noopener noreferrer";
-    document.body.append(anchor);
-    anchor.click();
-    anchor.remove();
+    const filename =
+      parseEncodedHeader(response.headers.get("x-download-filename")) ||
+      parseEncodedHeader(response.headers.get("x-freepik-filename")) ||
+      parseFilenameFromContentDisposition(response.headers.get("content-disposition")) ||
+      item.filename ||
+      item.title ||
+      `resource-${id}`;
+    const blob = await response.blob();
+    if (!blob.size) {
+      throw new Error("File tải về rỗng.");
+    }
+
+    downloadBlob(blob, filename);
 
     updateQueueItem(id, {
       status: "downloaded",
-      filename: payload.filename || item.title || `resource-${id}`,
+      filename,
     });
-    addHistoryEntry({
-      id,
-      title: item.title || `Resource ${id}`,
-      filename: payload.filename || `resource-${id}`,
-    });
-    setMessage(`Đã gửi lệnh tải cho ${item.title || `resource ${id}`}.`, "success");
+    await addHistoryEntry(
+      {
+        id,
+        title: item.title || `Resource ${id}`,
+        filename,
+      },
+      blob,
+    );
+    setMessage(`Đã tải ${item.title || `resource ${id}`} và lưu vào lịch sử local.`, "success");
   } catch (error) {
     updateQueueItem(id, {
       status: "ready",
       error: error.message || "Tải thất bại.",
     });
     setMessage(error.message || "Tải thất bại.", "error");
+  }
+}
+
+async function redownloadHistoryItem(storageKey) {
+  const item = historyItems.find((entry) => entry.storageKey === storageKey);
+  if (!item || !item.storageKey) {
+    setMessage("Không tìm thấy file local trong lịch sử.", "error");
+    return;
+  }
+
+  try {
+    const blob = await getHistoryFile(item.storageKey);
+    if (!(blob instanceof Blob) || !blob.size) {
+      const previousItems = readHistory();
+      const nextItems = previousItems.map((entry) =>
+        entry.storageKey === storageKey ? { ...entry, hasLocalFile: false, size: 0 } : entry,
+      );
+      await syncHistory(nextItems, previousItems);
+      throw new Error("File local không còn trong bộ nhớ trình duyệt.");
+    }
+
+    downloadBlob(blob, item.filename || `resource-${item.id}`);
+    setMessage(`Đã tải lại ${item.title || item.filename || `resource ${item.id}`} từ lịch sử local.`, "success");
+  } catch (error) {
+    setMessage(error.message || "Không tải lại được file từ lịch sử.", "error");
   }
 }
 
@@ -438,6 +726,17 @@ async function hydrateFromQueryParams() {
   window.history.replaceState({}, "", url.toString());
 }
 
+async function clearHistory() {
+  localStorage.removeItem(HISTORY_KEY);
+  historyItems = [];
+  await clearHistoryFiles();
+  renderHistory();
+}
+
+async function refreshHistory() {
+  await syncHistory(readHistory());
+}
+
 openSettingsButton.addEventListener("click", openSettings);
 closeSettingsButton.addEventListener("click", closeSettings);
 
@@ -474,10 +773,28 @@ queueList.addEventListener("click", (event) => {
   downloadItem(target.dataset.id);
 });
 
-clearHistoryButton.addEventListener("click", () => {
-  localStorage.removeItem(HISTORY_KEY);
-  renderHistory();
+historyList.addEventListener("click", (event) => {
+  const target = event.target.closest("[data-action='redownload']");
+  if (!target) {
+    return;
+  }
+
+  redownloadHistoryItem(target.dataset.storageKey);
+});
+
+clearHistoryButton.addEventListener("click", async () => {
+  await clearHistory();
   setMessage("Đã xóa lịch sử tải gần đây.", "neutral");
+});
+
+historySearchInput.addEventListener("input", renderHistory);
+historyFromDateInput.addEventListener("change", renderHistory);
+historyToDateInput.addEventListener("change", renderHistory);
+clearHistoryFiltersButton.addEventListener("click", () => {
+  historySearchInput.value = "";
+  historyFromDateInput.value = "";
+  historyToDateInput.value = "";
+  renderHistory();
 });
 
 settingsDialog.addEventListener("click", (event) => {
@@ -494,11 +811,15 @@ settingsDialog.addEventListener("click", (event) => {
   }
 });
 
-updateKeyBadge();
-renderHistory();
-renderQueue();
-hydrateFromQueryParams();
+async function initializeApp() {
+  updateKeyBadge();
+  renderQueue();
+  await refreshHistory();
+  await hydrateFromQueryParams();
 
-if (!getCookie(COOKIE_NAME)) {
-  setTimeout(openSettings, 250);
+  if (!getCookie(COOKIE_NAME)) {
+    setTimeout(openSettings, 250);
+  }
 }
+
+initializeApp();

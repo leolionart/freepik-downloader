@@ -229,9 +229,42 @@ textarea {
   margin-bottom: 18px;
 }
 
+.section-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .stack-list {
   display: grid;
   gap: 12px;
+}
+
+.history-toolbar {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.history-search .label,
+.history-date-field .label {
+  margin-bottom: 8px;
+}
+
+.history-date-filters {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.history-filter-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.history-retention-note {
+  margin: 0;
+  font-size: 0.9rem;
 }
 
 .empty-state {
@@ -246,10 +279,20 @@ textarea {
 
 .resource-card,
 .history-card {
-  display: block;
+  display: grid;
+  gap: 14px;
   padding: 18px;
   background: rgba(255, 255, 255, 0.72);
   border: 1px solid var(--border);
+}
+
+.history-card {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+}
+
+.history-main {
+  min-width: 0;
 }
 
 .resource-card h4,
@@ -257,6 +300,10 @@ textarea {
   margin: 10px 0 0;
   font-size: 1.08rem;
   line-height: 1.35;
+}
+
+.history-title {
+  margin-top: 0;
 }
 
 .resource-row {
@@ -284,6 +331,20 @@ textarea {
   align-items: center;
   justify-content: flex-start;
   margin-top: 16px;
+}
+
+.history-side {
+  display: grid;
+  justify-items: end;
+  align-content: space-between;
+  gap: 10px;
+}
+
+.history-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
 }
 
 .pill {
@@ -387,9 +448,21 @@ textarea {
 
   .topbar-actions,
   .modal-actions,
-  .history-card {
+  .section-actions {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .history-date-filters,
+  .history-card {
+    grid-template-columns: 1fr;
+  }
+
+  .history-side,
+  .history-actions,
+  .history-filter-actions {
+    justify-items: start;
+    justify-content: flex-start;
   }
 
   .shell,

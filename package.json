@@ -1,0 +1,14 @@
+{
+  "name": "freepik-pages-downloader",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler pages dev .",
+    "deploy": "wrangler pages deploy .",
+    "check": "node --check functions/_utils/freepik.js && node --check functions/api/resource/[id].js && node --check functions/api/download/[id].js"
+  },
+  "devDependencies": {
+    "wrangler": "^4.80.0"
+  }
+}

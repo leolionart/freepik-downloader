@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Freepik Downloader</title>
+    <meta
+      name="description"
+      content="Paste danh sách link Freepik, validate tên file và tải bằng Freepik API trên Cloudflare Pages."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/assets/styles.css" />
+  </head>
+  <body>
+    <div class="page-bg"></div>
+
+    <header class="topbar glass">
+      <div class="brand-lockup">
+        <div class="brand-mark">F</div>
+        <div>
+          <p class="brand-kicker">NAAI style utility</p>
+          <h1>Freepik Downloader</h1>
+        </div>
+      </div>
+
+      <div class="topbar-actions">
+        <span id="keyBadge" class="pill muted">API key chưa cấu hình</span>
+        <button id="openSettingsButton" class="btn btn-secondary" type="button">Settings</button>
+      </div>
+    </header>
+
+    <main class="shell">
+      <section class="hero-panel">
+        <div class="hero-copy">
+          <p class="eyebrow">Batch validate then download</p>
+          <h2>Paste list link Freepik, hệ thống sẽ lấy tên file rồi cho tải từng item.</h2>
+          <p>
+            Sau khi lưu key một lần trong popup Settings, màn hình chính chỉ còn nhập danh sách,
+            kiểm tra kết quả và bấm download.
+          </p>
+        </div>
+
+      </section>
+
+      <section class="composer glass">
+        <label class="label" for="resourceListInput">Danh sách link hoặc resource ID</label>
+        <textarea
+          id="resourceListInput"
+          rows="8"
+          placeholder="Mỗi dòng một link Freepik hoặc một resource ID&#10;https://www.freepik.com/..._138436913.htm&#10;138436914"
+        ></textarea>
+        <div class="composer-actions">
+          <button id="analyzeButton" class="btn btn-primary" type="button">Phân tích danh sách</button>
+          <button id="downloadAllButton" class="btn btn-secondary" type="button" disabled>
+            Download tất cả item hợp lệ
+          </button>
+        </div>
+        <div class="composer-footer">
+          <p class="helper">
+            Hỗ trợ paste nhiều dòng. Link trùng sẽ tự gộp theo resource ID.
+          </p>
+          <p id="messageBar" class="message neutral"></p>
+        </div>
+      </section>
+
+      <section class="content-grid">
+        <section class="glass">
+          <div class="section-head">
+            <div>
+              <p class="section-kicker">Detected resources</p>
+              <h3>Danh sách chờ tải</h3>
+            </div>
+            <span id="queueCount" class="pill muted">0 item</span>
+          </div>
+          <div id="queueList" class="stack-list empty-state">
+            <p>Chưa có resource nào được phân tích.</p>
+          </div>
+        </section>
+
+        <section class="glass">
+          <div class="section-head">
+            <div>
+              <p class="section-kicker">Recent downloads</p>
+              <h3>Lịch sử gần đây</h3>
+            </div>
+            <button id="clearHistoryButton" class="text-button" type="button">Xóa lịch sử</button>
+          </div>
+          <div id="historyList" class="stack-list empty-state">
+            <p>Chưa có file nào được tải gần đây.</p>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <dialog id="settingsDialog" class="settings-dialog">
+      <form method="dialog" class="settings-panel glass">
+        <div class="section-head">
+          <div>
+            <p class="section-kicker">Settings</p>
+            <h3>Cấu hình Freepik API key</h3>
+          </div>
+          <button id="closeSettingsButton" class="text-button" type="submit">Đóng</button>
+        </div>
+
+        <label class="label" for="apiKeyInput">Freepik API key</label>
+        <input
+          id="apiKeyInput"
+          type="password"
+          placeholder="FPSX..."
+          autocomplete="off"
+          spellcheck="false"
+        />
+
+        <p class="helper">
+          Key được lưu ở cookie local cùng domain để Cloudflare Pages Functions đọc khi proxy request.
+        </p>
+
+        <div class="modal-actions">
+          <button id="clearKeyButton" class="btn btn-secondary" type="button">Xóa key</button>
+          <button id="saveKeyButton" class="btn btn-primary" type="button">Lưu cấu hình</button>
+        </div>
+      </form>
+    </dialog>
+
+    <script type="module" src="/assets/app.js"></script>
+  </body>
+  </html>

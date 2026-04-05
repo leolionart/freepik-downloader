@@ -1,4 +1,4 @@
-# Freepik Pages Downloader
+# Freepik Downloader
 
 Tool cực gọn để:
 

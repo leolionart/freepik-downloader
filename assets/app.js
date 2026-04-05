@@ -20,6 +20,7 @@ const queueList = document.querySelector("#queueList");
 const historyList = document.querySelector("#historyList");
 
 let queueItems = [];
+let hasAutoRun = false;
 
 function getCookie(name) {
   const target = `${name}=`;
@@ -298,10 +299,14 @@ async function validateItem(item) {
 }
 
 async function analyzeList() {
+  return analyzeListWithOptions();
+}
+
+async function analyzeListWithOptions(options = {}) {
   if (!getCookie(COOKIE_NAME)) {
     setMessage("Bạn cần cấu hình Freepik API key trong Settings trước.", "error");
     openSettings();
-    return;
+    return { readyCount: 0, totalCount: 0, invalidCount: 0 };
   }
 
   const { items, invalid } = parseInputList();
@@ -310,7 +315,7 @@ async function analyzeList() {
 
   if (!items.length) {
     setMessage("Danh sách không có resource ID hợp lệ.", "error");
-    return;
+    return { readyCount: 0, totalCount: 0, invalidCount: invalid.length };
   }
 
   setMessage(`Đang validate ${items.length} resource...`, "neutral");
@@ -328,7 +333,11 @@ async function analyzeList() {
       `Validate xong ${readyCount}/${items.length} item. Bỏ qua ${invalid.length} dòng không nhận diện được ID.`,
       readyCount ? "success" : "error",
     );
-    return;
+    if (options.autoDownload && readyCount) {
+      await downloadAllReady();
+    }
+
+    return { readyCount, totalCount: items.length, invalidCount: invalid.length };
   }
 
   setMessage(
@@ -337,6 +346,12 @@ async function analyzeList() {
       : "Không có item nào validate thành công.",
     readyCount ? "success" : "error",
   );
+
+  if (options.autoDownload && readyCount) {
+    await downloadAllReady();
+  }
+
+  return { readyCount, totalCount: items.length, invalidCount: invalid.length };
 }
 
 async function downloadItem(id) {
@@ -395,6 +410,32 @@ async function downloadAllReady() {
     // eslint-disable-next-line no-await-in-loop
     await downloadItem(item.id);
   }
+}
+
+async function hydrateFromQueryParams() {
+  if (hasAutoRun) {
+    return;
+  }
+
+  const url = new URL(window.location.href);
+  const importValue = url.searchParams.get("import");
+  if (!importValue) {
+    return;
+  }
+
+  hasAutoRun = true;
+  resourceListInput.value = importValue
+    .split(/\n+/)
+    .map((item) => item.trim())
+    .filter(Boolean)
+    .join("\n");
+
+  const shouldDownload = url.searchParams.get("download") === "1";
+  await analyzeListWithOptions({ autoDownload: shouldDownload });
+
+  url.searchParams.delete("import");
+  url.searchParams.delete("download");
+  window.history.replaceState({}, "", url.toString());
 }
 
 openSettingsButton.addEventListener("click", openSettings);
@@ -456,6 +497,7 @@ settingsDialog.addEventListener("click", (event) => {
 updateKeyBadge();
 renderHistory();
 renderQueue();
+hydrateFromQueryParams();
 
 if (!getCookie(COOKIE_NAME)) {
   setTimeout(openSettings, 250);

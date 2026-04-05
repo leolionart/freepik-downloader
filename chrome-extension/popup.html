@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Freepik Downloader</title>
+    <link rel="stylesheet" href="./popup.css" />
+  </head>
+  <body>
+    <main class="popup-shell">
+      <header class="popup-header">
+        <p class="eyebrow">Chrome extension</p>
+        <h1>Freepik Downloader</h1>
+      </header>
+
+      <section class="panel">
+        <label class="label" for="appUrlInput">URL app downloader</label>
+        <input id="appUrlInput" type="url" placeholder="https://freepik-downloader.pages.dev" />
+        <p class="hint">Đây là domain Cloudflare Pages của app web đang giữ API key.</p>
+      </section>
+
+      <section class="panel">
+        <p class="label">Tab hiện tại</p>
+        <div id="tabState" class="tab-state">Đang đọc tab...</div>
+      </section>
+
+      <footer class="actions">
+        <button id="saveButton" class="btn btn-secondary" type="button">Lưu app URL</button>
+        <button id="confirmButton" class="btn btn-primary" type="button" disabled>
+          Xác nhận và tải
+        </button>
+      </footer>
+
+      <p id="messageBar" class="message"></p>
+    </main>
+
+    <script type="module" src="./popup.js"></script>
+  </body>
+  </html>

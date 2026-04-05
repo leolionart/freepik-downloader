@@ -1,0 +1,17 @@
+#fpdl-floating-button {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 2147483647;
+  border: 0;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #2563eb, #f97316);
+  color: #ffffff;
+  font: 600 13px/1.2 "Space Grotesk", system-ui, sans-serif;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.24);
+  cursor: pointer;
+}
+
+#fpdl-floating-button:hover {
+  filter: brightness(1.05);
+}

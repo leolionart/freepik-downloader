@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "Freepik Downloader",
+  "version": "0.1.0",
+  "description": "Mở Freepik Downloader từ tab Freepik hiện tại và xác nhận tải nhanh.",
+  "permissions": ["tabs", "storage"],
+  "host_permissions": ["https://*.freepik.com/*"],
+  "action": {
+    "default_title": "Freepik Downloader",
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://*.freepik.com/*"],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_idle"
+    }
+  ]
+}

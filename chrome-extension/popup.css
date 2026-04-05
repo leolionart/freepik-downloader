@@ -1,0 +1,145 @@
+:root {
+  --background: #ffffff;
+  --foreground: #0f172a;
+  --muted: #64748b;
+  --border: rgba(148, 163, 184, 0.28);
+  --primary: #2563eb;
+  --accent: #f97316;
+  --success: #059669;
+  --danger: #dc2626;
+  --panel: rgba(248, 250, 252, 0.92);
+  --font: "Space Grotesk", system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 360px;
+  background:
+    radial-gradient(circle at top left, rgba(37, 99, 235, 0.12), transparent 32%),
+    radial-gradient(circle at top right, rgba(249, 115, 22, 0.14), transparent 28%),
+    var(--background);
+  color: var(--foreground);
+  font-family: var(--font);
+}
+
+.popup-shell {
+  padding: 16px;
+}
+
+.popup-header h1,
+.label,
+.hint,
+.message,
+.tab-title,
+.tab-url {
+  margin: 0;
+}
+
+.eyebrow {
+  margin: 0 0 6px;
+  color: var(--muted);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
+
+.popup-header h1 {
+  font-size: 24px;
+}
+
+.panel {
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+}
+
+.label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--foreground);
+  font: inherit;
+}
+
+.hint {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.tab-state {
+  display: grid;
+  gap: 6px;
+}
+
+.tab-title {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.tab-url {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.btn {
+  flex: 1;
+  border: 0;
+  padding: 12px 14px;
+  cursor: pointer;
+  font: inherit;
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: #fff;
+}
+
+.btn-secondary {
+  background: rgba(148, 163, 184, 0.16);
+  color: var(--foreground);
+}
+
+.message {
+  min-height: 20px;
+  margin-top: 12px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.message.success {
+  color: var(--success);
+}
+
+.message.error {
+  color: var(--danger);
+}

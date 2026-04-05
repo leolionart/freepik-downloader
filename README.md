@@ -14,6 +14,7 @@ Tool cực gọn để:
 - `assets/styles.css`: style
 - `functions/api/resource/[id].js`: validate resource
 - `functions/api/download/[id].js`: lấy signed download URL từ Freepik
+- `chrome-extension/`: Chrome extension mở app từ tab Freepik hiện tại
 
 ## Chạy local
 
@@ -33,6 +34,36 @@ npm run dev
 4. Deploy.
 
 Cloudflare Pages sẽ tự nhận thư mục `functions/` để chạy server-side routes.
+
+## Chrome Extension
+
+Extension được thiết kế để không giữ API key riêng. Nó chỉ:
+
+- đọc URL tab Freepik hiện tại
+- hiện popup xác nhận
+- chèn nút nổi ở góc phải dưới trên trang Freepik hợp lệ
+- mở app web trên Cloudflare Pages với query `?import=<link>&download=1`
+
+App web sẽ dùng cookie API key trên chính domain của nó để validate và tải.
+
+### Load extension thủ công
+
+1. Vào `chrome://extensions`
+2. Bật `Developer mode`
+3. Chọn `Load unpacked`
+4. Trỏ tới thư mục `chrome-extension`
+
+### Cấu hình extension
+
+Lần đầu mở extension:
+
+1. nhập URL app Cloudflare Pages, ví dụ `https://freepik-downloader.pages.dev`
+2. bấm `Lưu app URL`
+3. mở một trang resource trên Freepik
+4. bấm icon extension rồi `Xác nhận và tải`
+5. hoặc bấm trực tiếp nút nổi `Download bằng Freepik Downloader` trên trang Freepik
+
+Extension sẽ mở app web với link đang xem và app sẽ tự chạy validate/download.
 
 ## Lưu ý bảo mật
 

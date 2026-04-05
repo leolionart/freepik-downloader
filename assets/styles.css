@@ -474,15 +474,29 @@ textarea {
 @media (max-width: 960px) {
   .hero-panel,
   .content-grid,
-  .composer-footer,
-  .topbar {
+  .composer-footer {
     grid-template-columns: 1fr;
     flex-direction: column;
     align-items: stretch;
     gap: 20px;
   }
 
-  .topbar-actions,
+  .topbar {
+    flex-wrap: wrap;
+    gap: 14px;
+    padding: 16px 18px;
+  }
+
+  .topbar-actions {
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    justify-content: space-between;
+    gap: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--border);
+  }
+
   .modal-actions {
     flex-direction: column;
     align-items: stretch;
@@ -490,25 +504,43 @@ textarea {
   }
 
   .section-head {
-    flex-direction: column;
-    align-items: stretch;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
     gap: 12px;
+    flex-wrap: wrap;
   }
 
   .section-actions {
+    display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-end;
     gap: 8px;
+    margin-top: 4px;
   }
 
-  .history-filters-row,
   .history-card {
     grid-template-columns: 1fr;
   }
 
   .history-filters-row {
     display: grid;
-    gap: 8px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .history-field.search-field {
+    grid-column: span 2;
+  }
+
+  .history-field.date-field {
+    grid-column: span 1;
+  }
+
+  .history-filter-actions {
+    grid-column: span 2;
+    padding-left: 0;
+    justify-content: flex-end;
   }
 
   .history-field {

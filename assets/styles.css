@@ -445,6 +445,30 @@ textarea {
   margin-top: 18px;
 }
 
+.icon-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 0;
+  background: rgba(148, 163, 184, 0.1);
+  color: var(--muted-foreground);
+  cursor: pointer;
+  transition: all 160ms ease;
+}
+
+.icon-button:hover {
+  background: rgba(148, 163, 184, 0.2);
+  color: var(--foreground);
+  transform: translateY(-1px);
+}
+
+.icon-button:active {
+  transform: translateY(0);
+}
+
 @media (max-width: 960px) {
   .hero-panel,
   .content-grid,
@@ -456,10 +480,14 @@ textarea {
   }
 
   .topbar-actions,
-  .modal-actions,
-  .section-actions {
+  .modal-actions {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .section-actions {
+    align-items: center;
+    gap: 8px;
   }
 
   .history-filters-row,

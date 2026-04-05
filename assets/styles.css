@@ -57,16 +57,15 @@ textarea {
 }
 
 .topbar {
-  position: sticky;
-  top: 16px;
+  position: relative;
   z-index: 40;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 20px;
   width: min(1200px, calc(100% - 32px));
-  margin: 16px auto 0;
-  padding: 18px 22px;
+  margin: 0 auto;
+  padding: 24px 22px;
 }
 
 .brand-lockup {
@@ -118,13 +117,14 @@ textarea {
   grid-template-columns: 1fr;
   gap: 12px;
   align-items: start;
-  margin-bottom: 18px;
+  margin-bottom: 24px;
 }
 
 .hero-copy h2 {
   max-width: 780px;
   font-size: clamp(2rem, 4vw, 4rem);
   line-height: 0.96;
+  word-break: break-word;
 }
 
 .hero-copy p:last-child {
@@ -309,6 +309,7 @@ textarea {
   margin: 10px 0 0;
   font-size: 1.08rem;
   line-height: 1.35;
+  word-break: break-word;
 }
 
 .history-title {
@@ -328,6 +329,7 @@ textarea {
   margin: 0;
   font-size: 0.92rem;
   line-height: 1.6;
+  word-break: break-word;
 }
 
 .resource-error {
@@ -477,16 +479,25 @@ textarea {
     grid-template-columns: 1fr;
     flex-direction: column;
     align-items: stretch;
+    gap: 20px;
   }
 
   .topbar-actions,
   .modal-actions {
     flex-direction: column;
     align-items: stretch;
+    gap: 12px;
+  }
+
+  .section-head {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
   }
 
   .section-actions {
     align-items: center;
+    justify-content: space-between;
     gap: 8px;
   }
 
@@ -511,12 +522,22 @@ textarea {
     justify-content: flex-start;
   }
 
+  .history-side {
+    margin-top: 4px;
+    padding-top: 14px;
+    border-top: 1px dashed var(--border);
+  }
+
   .shell,
   .topbar {
-    width: min(100% - 20px, 1200px);
+    width: calc(100% - 24px);
   }
 
   .composer-actions {
     flex-direction: column;
+  }
+
+  .hero-copy h2 {
+    font-size: 2.2rem;
   }
 }

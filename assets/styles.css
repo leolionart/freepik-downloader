@@ -241,30 +241,39 @@ textarea {
 }
 
 .history-toolbar {
-  display: grid;
-  gap: 12px;
   margin-bottom: 16px;
+  padding: 12px;
+  background: rgba(148, 163, 184, 0.05);
+  border-bottom: 1px solid var(--border);
 }
 
-.history-search .label,
-.history-date-field .label {
-  margin-bottom: 8px;
-}
-
-.history-date-filters {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+.history-filters-row {
+  display: flex;
+  align-items: center;
   gap: 10px;
+  flex-wrap: wrap;
+}
+
+.history-field {
+  flex: 1;
+  min-width: 120px;
+}
+
+.history-field.search-field {
+  flex: 2;
+  min-width: 200px;
+}
+
+.history-filters-row input {
+  padding: 10px 12px;
+  font-size: 0.9rem;
+  background: rgba(255, 255, 255, 0.92);
 }
 
 .history-filter-actions {
   display: flex;
-  justify-content: flex-end;
-}
-
-.history-retention-note {
-  margin: 0;
-  font-size: 0.9rem;
+  align-items: center;
+  padding-left: 10px;
 }
 
 .empty-state {
@@ -453,9 +462,18 @@ textarea {
     align-items: stretch;
   }
 
-  .history-date-filters,
+  .history-filters-row,
   .history-card {
     grid-template-columns: 1fr;
+  }
+
+  .history-filters-row {
+    display: grid;
+    gap: 8px;
+  }
+
+  .history-field {
+    min-width: 0;
   }
 
   .history-side,

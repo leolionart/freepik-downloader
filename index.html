@@ -91,36 +91,31 @@
             </div>
             <div class="section-actions">
               <span id="historySummary" class="pill muted">0/0 bản ghi</span>
+              <button id="toggleHistoryFiltersButton" class="text-button" type="button">Bộ lọc</button>
               <button id="clearHistoryButton" class="text-button" type="button">Xóa lịch sử</button>
             </div>
           </div>
-          <div class="history-toolbar">
-            <div class="history-search">
-              <label class="label" for="historySearchInput">Search theo tên hoặc ID</label>
-              <input
-                id="historySearchInput"
-                type="search"
-                placeholder="Search theo tên file, title hoặc resource ID"
-                autocomplete="off"
-                spellcheck="false"
-              />
-            </div>
-            <div class="history-date-filters">
-              <div class="history-date-field">
-                <label class="label" for="historyFromDate">Từ ngày</label>
+          <div id="historyToolbar" class="history-toolbar" hidden>
+            <div class="history-filters-row">
+              <div class="history-field search-field">
+                <input
+                  id="historySearchInput"
+                  type="search"
+                  placeholder="Search theo tên, ID hoặc link Freepik..."
+                  autocomplete="off"
+                  spellcheck="false"
+                />
+              </div>
+              <div class="history-field date-field">
                 <input id="historyFromDate" type="date" />
               </div>
-              <div class="history-date-field">
-                <label class="label" for="historyToDate">Đến ngày</label>
+              <div class="history-field date-field">
                 <input id="historyToDate" type="date" />
               </div>
+              <div class="history-filter-actions">
+                <button id="clearHistoryFiltersButton" class="text-button" type="button">Xóa bộ lọc</button>
+              </div>
             </div>
-            <div class="history-filter-actions">
-              <button id="clearHistoryFiltersButton" class="text-button" type="button">Xóa bộ lọc</button>
-            </div>
-            <p id="historyRetentionNote" class="history-retention-note helper">
-              Lịch sử lưu cục bộ, giới hạn theo cấu hình retention.
-            </p>
           </div>
           <div id="historyList" class="stack-list empty-state">
             <p>Chưa có file nào được tải gần đây.</p>

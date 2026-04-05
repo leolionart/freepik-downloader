@@ -26,7 +26,8 @@ const historySearchInput = document.querySelector("#historySearchInput");
 const historyFromDateInput = document.querySelector("#historyFromDate");
 const historyToDateInput = document.querySelector("#historyToDate");
 const clearHistoryFiltersButton = document.querySelector("#clearHistoryFiltersButton");
-const historyRetentionNote = document.querySelector("#historyRetentionNote");
+const toggleHistoryFiltersButton = document.querySelector("#toggleHistoryFiltersButton");
+const historyToolbar = document.querySelector("#historyToolbar");
 const historySummary = document.querySelector("#historySummary");
 const historyList = document.querySelector("#historyList");
 
@@ -279,7 +280,14 @@ function getFilteredHistoryItems() {
   const fromTimestamp = filters.fromDate ? new Date(`${filters.fromDate}T00:00:00`).getTime() : null;
   const toTimestamp = filters.toDate ? new Date(`${filters.toDate}T23:59:59.999`).getTime() : null;
 
+  const queryId = filters.query ? extractResourceId(filters.query) : "";
+
   return historyItems.filter((item) => {
+    // Nếu search query là link, check xem ID có khớp không
+    if (queryId && item.id === queryId) {
+      return true;
+    }
+
     const haystack = [item.title, item.filename, item.id].join(" ").toLowerCase();
     if (filters.query && !haystack.includes(filters.query)) {
       return false;
@@ -366,10 +374,6 @@ function parseFilenameFromContentDisposition(headerValue) {
 
 function renderHistory() {
   const filteredItems = getFilteredHistoryItems();
-
-  if (historyRetentionNote) {
-    historyRetentionNote.textContent = `Lịch sử lưu cục bộ tối đa ${HISTORY_RETENTION_DAYS} ngày hoặc ${MAX_HISTORY_ITEMS} file gần nhất.`;
-  }
 
   if (historySummary) {
     historySummary.textContent = `${filteredItems.length}/${historyItems.length} bản ghi`;
@@ -785,6 +789,10 @@ historyList.addEventListener("click", (event) => {
 clearHistoryButton.addEventListener("click", async () => {
   await clearHistory();
   setMessage("Đã xóa lịch sử tải gần đây.", "neutral");
+});
+
+toggleHistoryFiltersButton.addEventListener("click", () => {
+  historyToolbar.hidden = !historyToolbar.hidden;
 });
 
 historySearchInput.addEventListener("input", renderHistory);

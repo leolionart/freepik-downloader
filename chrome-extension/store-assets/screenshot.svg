@@ -1,0 +1,34 @@
+<svg width="1280" height="800" viewBox="0 0 1280 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1280" height="800" fill="#F8FAFC"/>
+  <circle cx="124" cy="82" r="220" fill="#2563EB" fill-opacity="0.14"/>
+  <circle cx="1180" cy="54" r="220" fill="#F97316" fill-opacity="0.12"/>
+  <rect x="40" y="18" width="1200" height="98" fill="white" stroke="#E2E8F0"/>
+  <rect x="64" y="46" width="34" height="34" fill="url(#paint0_linear_1_2)"/>
+  <text x="118" y="44" fill="#64748B" font-family="Arial, sans-serif" font-size="11" letter-spacing="2">NAAI STYLE UTILITY</text>
+  <text x="118" y="84" fill="#0F172A" font-family="Arial, sans-serif" font-size="32" font-weight="700">Freepik Downloader</text>
+  <rect x="904" y="50" width="200" height="30" fill="#DCFCE7"/>
+  <text x="917" y="70" fill="#059669" font-family="Arial, sans-serif" font-size="14">API key đã lưu: FPSX••••7890</text>
+  <rect x="1117" y="50" width="100" height="44" fill="#F1F5F9"/>
+  <text x="1142" y="76" fill="#0F172A" font-family="Arial, sans-serif" font-size="14" font-weight="700">Settings</text>
+  <text x="40" y="156" fill="#64748B" font-family="Arial, sans-serif" font-size="11" letter-spacing="2">BATCH VALIDATE THEN DOWNLOAD</text>
+  <text x="40" y="208" fill="#17213A" font-family="Arial, sans-serif" font-size="56" font-weight="700">Paste list link Freepik, hệ thống</text>
+  <text x="40" y="268" fill="#17213A" font-family="Arial, sans-serif" font-size="56" font-weight="700">sẽ lấy tên file rồi cho tải từng</text>
+  <text x="40" y="328" fill="#17213A" font-family="Arial, sans-serif" font-size="56" font-weight="700">item.</text>
+  <text x="40" y="380" fill="#64748B" font-family="Arial, sans-serif" font-size="18">Paste link hàng loạt, xác nhận item hợp lệ, rồi download bằng app web.</text>
+  <rect x="40" y="424" width="1200" height="320" fill="white" stroke="#E2E8F0"/>
+  <text x="64" y="458" fill="#64748B" font-family="Arial, sans-serif" font-size="13">Danh sách link hoặc resource ID</text>
+  <rect x="64" y="478" width="1152" height="220" fill="white" stroke="#CBD5E1"/>
+  <text x="84" y="516" fill="#17213A" font-family="Arial, sans-serif" font-size="18">https://www.freepik.com/premium-vector/medical-guard-icon_138436913.htm</text>
+  <text x="84" y="544" fill="#17213A" font-family="Arial, sans-serif" font-size="18">138436914</text>
+  <rect x="64" y="720" width="196" height="48" fill="#1D4ED8"/>
+  <text x="83" y="749" fill="white" font-family="Arial, sans-serif" font-size="16" font-weight="700">Phân tích danh sách</text>
+  <rect x="270" y="720" width="254" height="48" fill="#E2E8F0"/>
+  <text x="288" y="749" fill="#6B7280" font-family="Arial, sans-serif" font-size="16" font-weight="700">Download tất cả item hợp lệ</text>
+  <rect x="793" y="785" width="423" height="0" stroke="#000000"/>
+  <defs>
+    <linearGradient id="paint0_linear_1_2" x1="64" y1="46" x2="98" y2="80" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2563EB"/>
+      <stop offset="1" stop-color="#F97316"/>
+    </linearGradient>
+  </defs>
+</svg>

@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "wrangler pages dev .",
     "deploy": "wrangler pages deploy .",
-    "check": "node --check functions/_utils/freepik.js && node --check functions/api/resource/[id].js && node --check functions/api/download/[id].js"
+    "check": "node --check functions/_utils/freepik.js && node --check functions/api/resource/[id].js && node --check functions/api/download/[id].js && node --check chrome-extension/popup.js && node --check chrome-extension/content.js",
+    "package:extension": "bash scripts/package-extension.sh"
   },
   "devDependencies": {
     "wrangler": "^4.80.0"

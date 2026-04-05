@@ -5,9 +5,19 @@
   "description": "Mở Freepik Downloader từ tab Freepik hiện tại và xác nhận tải nhanh.",
   "permissions": ["tabs", "storage"],
   "host_permissions": ["https://*.freepik.com/*"],
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
   "action": {
     "default_title": "Freepik Downloader",
-    "default_popup": "popup.html"
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png"
+    }
   },
   "content_scripts": [
     {

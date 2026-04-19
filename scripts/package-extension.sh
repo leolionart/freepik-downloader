@@ -15,6 +15,7 @@ cp -R \
   "$EXT_DIR/popup.html" \
   "$EXT_DIR/popup.css" \
   "$EXT_DIR/popup.js" \
+  "$EXT_DIR/background.js" \
   "$EXT_DIR/content.css" \
   "$EXT_DIR/content.js" \
   "$EXT_DIR/icons" \

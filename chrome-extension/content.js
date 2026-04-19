@@ -1,4 +1,4 @@
-const STORAGE_KEY = "freepikDownloaderAppUrl";
+const API_KEY_KEY = "freepikApiKey";
 const DEFAULT_APP_URL = "https://freepik-downloader.pages.dev";
 
 function extractResourceId(input) {
@@ -37,10 +37,38 @@ function buildTargetUrl(appUrl) {
   return target.toString();
 }
 
-async function openDownloader() {
-  const stored = await chrome.storage.sync.get(STORAGE_KEY);
-  const appUrl = stored[STORAGE_KEY] || DEFAULT_APP_URL;
-  window.open(buildTargetUrl(appUrl), "_blank", "noopener");
+async function handleDownloadClick() {
+  const stored = await chrome.storage.sync.get([API_KEY_KEY]);
+  const apiKey = stored[API_KEY_KEY];
+  const resourceId = extractResourceId(window.location.href);
+
+  if (!resourceId) {
+    alert("Resource ID not found on this page.");
+    return;
+  }
+
+  if (apiKey) {
+    const button = document.querySelector("#fpdl-floating-button");
+    const label = button?.querySelector(".fpdl-label");
+    const originalText = label ? label.textContent : "";
+
+    if (label) label.textContent = "Processing...";
+    
+    // Gửi yêu cầu cho Background Script xử lý để tránh lỗi CORS và Network Error
+    chrome.runtime.sendMessage({
+      action: "download",
+      resourceId: resourceId,
+      apiKey: apiKey
+    }, (response) => {
+      if (label) label.textContent = originalText;
+      
+      if (response && response.error) {
+        alert("Error: " + response.error);
+      }
+    });
+  } else {
+    window.open(buildTargetUrl(DEFAULT_APP_URL), "_blank", "noopener");
+  }
 }
 
 function ensureFloatingButton() {
@@ -51,8 +79,11 @@ function ensureFloatingButton() {
   const button = document.createElement("button");
   button.id = "fpdl-floating-button";
   button.type = "button";
-  button.textContent = "Download bằng Freepik Downloader";
-  button.addEventListener("click", openDownloader);
+  button.innerHTML = `
+    <span class="fpdl-icon"></span>
+    <span class="fpdl-label">Download this image</span>
+  `;
+  button.addEventListener("click", handleDownloadClick);
   document.documentElement.appendChild(button);
 }
 

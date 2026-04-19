@@ -14,20 +14,25 @@
       </header>
 
       <section class="panel">
-        <label class="label" for="appUrlInput">URL app downloader</label>
-        <input id="appUrlInput" type="url" placeholder="https://freepik-downloader.pages.dev" />
-        <p class="hint">Đây là domain Cloudflare Pages của app web đang giữ API key.</p>
+        <label class="label" for="apiKeyInput">Freepik API Key</label>
+        <div class="input-wrapper">
+          <input id="apiKeyInput" type="password" placeholder="Enter API Key from Freepik..." />
+          <button id="togglePassword" class="btn-icon" type="button" title="Toggle visibility">
+            <svg class="eye-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+        <p class="hint">Get your key at <a href="https://developer.freepik.com" target="_blank">developer.freepik.com</a>. This key is stored securely in your browser.</p>
       </section>
 
       <section class="panel">
-        <p class="label">Tab hiện tại</p>
-        <div id="tabState" class="tab-state">Đang đọc tab...</div>
+        <p class="label">Current Tab</p>
+        <div id="tabState" class="tab-state">Reading tab...</div>
       </section>
 
       <footer class="actions">
-        <button id="saveButton" class="btn btn-secondary" type="button">Lưu app URL</button>
+        <button id="saveButton" class="btn btn-secondary" type="button">Save Settings</button>
         <button id="confirmButton" class="btn btn-primary" type="button" disabled>
-          Xác nhận và tải
+          Direct Download
         </button>
       </footer>
 

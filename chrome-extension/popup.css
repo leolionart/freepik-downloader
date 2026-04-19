@@ -128,18 +128,72 @@ input {
   color: var(--foreground);
 }
 
+.panel-alt {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--border);
+}
+
+.panel-alt .label {
+  margin-bottom: 8px;
+}
+
+.panel-alt input {
+  font-size: 13px;
+  background: rgba(148, 163, 184, 0.05);
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-wrapper input {
+  padding-right: 44px;
+}
+
+.btn-icon {
+  position: absolute;
+  right: 8px;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  padding: 8px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.btn-icon:hover {
+  color: var(--primary);
+  background: rgba(37, 99, 235, 0.08);
+}
+
+.eye-icon {
+  width: 20px;
+  height: 20px;
+}
+
 .message {
   min-height: 20px;
-  margin-top: 12px;
-  font-size: 12px;
+  margin-top: 16px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
   line-height: 1.5;
-  color: var(--muted);
 }
 
 .message.success {
+  background: rgba(5, 150, 105, 0.1);
   color: var(--success);
 }
 
 .message.error {
+  background: rgba(220, 38, 38, 0.1);
   color: var(--danger);
 }

@@ -12,7 +12,7 @@
   <path d="M348 113L358 123" stroke="white" stroke-width="6" stroke-linecap="round"/>
   <circle cx="345" cy="109" r="13" stroke="white" stroke-width="6"/>
   <text x="48" y="218" fill="white" font-family="Arial, sans-serif" font-size="26" font-weight="700">Freepik Downloader</text>
-  <text x="48" y="242" fill="#CBD5E1" font-family="Arial, sans-serif" font-size="14">One-click confirm and download from Freepik tabs.</text>
+  <text x="48" y="242" fill="#CBD5E1" font-family="Arial, sans-serif" font-size="14">One-click confirm and download from Magnific tabs.</text>
   <defs>
     <linearGradient id="paint0_linear_1_2" x1="26" y1="28" x2="414" y2="252" gradientUnits="userSpaceOnUse">
       <stop stop-color="#2563EB"/>

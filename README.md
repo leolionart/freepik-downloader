@@ -2,10 +2,10 @@
 
 Tool cực gọn để:
 
-- lưu `Freepik API key` ở cookie local trên trình duyệt
-- paste link Freepik hoặc resource ID
+- lưu `Magnific API key` ở cookie local trên trình duyệt
+- paste link Magnific/Freepik hoặc resource ID
 - validate metadata resource trước khi tải
-- gọi endpoint download chính thức của Freepik ở phía server qua Cloudflare Pages Functions
+- gọi endpoint download chính thức của Magnific ở phía server qua Cloudflare Pages Functions
 
 ## Cấu trúc
 
@@ -13,8 +13,8 @@ Tool cực gọn để:
 - `assets/app.js`: logic client
 - `assets/styles.css`: style
 - `functions/api/resource/[id].js`: validate resource
-- `functions/api/download/[id].js`: lấy signed download URL từ Freepik
-- `chrome-extension/`: Chrome extension mở app từ tab Freepik hiện tại
+- `functions/api/download/[id].js`: lấy signed download URL từ Magnific
+- `chrome-extension/`: Chrome extension hỗ trợ tab Magnific và Freepik cũ
 - `privacy-policy.html`: privacy policy để dùng cho Chrome Web Store listing
 - `scripts/package-extension.sh`: đóng gói ZIP cho Chrome extension
 
@@ -41,12 +41,12 @@ Cloudflare Pages sẽ tự nhận thư mục `functions/` để chạy server-si
 
 Extension được thiết kế để không giữ API key riêng. Nó chỉ:
 
-- đọc URL tab Freepik hiện tại
+- đọc URL tab Magnific/Freepik hiện tại
 - hiện popup xác nhận
-- chèn nút nổi ở góc phải dưới trên trang Freepik hợp lệ
-- mở app web trên Cloudflare Pages với query `?import=<link>&download=1`
+- chèn nút nổi ở góc phải dưới trên trang resource hợp lệ
+- tải trực tiếp bằng API key đã lưu trong extension, hoặc mở app web nếu chưa lưu key trong extension
 
-App web sẽ dùng cookie API key trên chính domain của nó để validate và tải.
+App web sẽ dùng cookie API key trên chính domain của nó để validate và tải khi chạy qua Cloudflare Pages.
 
 ### Load extension thủ công
 
@@ -59,11 +59,11 @@ App web sẽ dùng cookie API key trên chính domain của nó để validate v
 
 Lần đầu mở extension:
 
-1. nhập URL app Cloudflare Pages, ví dụ `https://freepik-downloader.pages.dev`
-2. bấm `Lưu app URL`
-3. mở một trang resource trên Freepik
-4. bấm icon extension rồi `Xác nhận và tải`
-5. hoặc bấm trực tiếp nút nổi `Download bằng Freepik Downloader` trên trang Freepik
+1. nhập Magnific API key
+2. bấm lưu
+3. mở một trang resource trên Magnific hoặc Freepik cũ
+4. bấm icon extension rồi xác nhận tải
+5. hoặc bấm trực tiếp nút nổi trên trang resource
 
 Extension sẽ mở app web với link đang xem và app sẽ tự chạy validate/download.
 
@@ -90,7 +90,7 @@ chrome-extension/store-assets/
 - API key được lưu ở cookie local cùng domain app để Functions đọc được.
 - Key không được hard-code vào source.
 - Với mô hình này key vẫn nằm ở phía trình duyệt người dùng cuối. Phù hợp nhất cho tool cá nhân/nội bộ nhỏ.
-- Lệnh download gọi `GET /v1/resources/{id}/download`, đây là thao tác có thể tiêu tốn quota/chi phí từ tài khoản Freepik của key đó.
+- Lệnh download gọi `GET https://api.magnific.com/v1/resources/{id}/download`, đây là thao tác có thể tiêu tốn quota/chi phí từ tài khoản Magnific của key đó.
 
 ## Chrome Web Store Notes
 

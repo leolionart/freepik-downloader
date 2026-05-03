@@ -1,15 +1,18 @@
 {
   "manifest_version": 3,
   "name": "Freepik Direct Downloader",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Download Freepik resources directly from the page using your official API Key. No redirect, no IP blocks.",
   "permissions": ["tabs", "storage", "downloads"],
   "background": {
     "service_worker": "background.js"
   },
   "host_permissions": [
+    "https://freepik.com/*",
     "https://*.freepik.com/*",
-    "https://api.freepik.com/*"
+    "https://magnific.com/*",
+    "https://*.magnific.com/*",
+    "https://api.magnific.com/*"
   ],
   "icons": {
     "16": "icons/icon-16.png",
@@ -27,7 +30,12 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://*.freepik.com/*"],
+      "matches": [
+        "https://freepik.com/*",
+        "https://*.freepik.com/*",
+        "https://magnific.com/*",
+        "https://*.magnific.com/*"
+      ],
       "js": ["content.js"],
       "css": ["content.css"],
       "run_at": "document_idle"

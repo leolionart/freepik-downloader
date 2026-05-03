@@ -1,4 +1,10 @@
 const API_KEY_KEY = "freepikApiKey";
+const SUPPORTED_RESOURCE_HOSTS = ["freepik.com", "magnific.com"];
+const RESOURCE_ID_PATTERNS = [
+  /\/resources\/(\d+)(?:[/?#]|$)/i,
+  /(?:_|-|\/)(\d{4,})(?:\.htm|[/?#]|$)/i,
+  /[?&](?:id|resource_id|resource-id)=(\d+)/i,
+];
 
 const apiKeyInput = document.querySelector("#apiKeyInput");
 const tabState = document.querySelector("#tabState");
@@ -33,14 +39,12 @@ function extractResourceId(input) {
 
   try {
     const url = new URL(value);
-    const apiMatch = url.pathname.match(/\/resources\/(\d+)/);
-    if (apiMatch) {
-      return apiMatch[1];
-    }
-
-    const slugMatch = url.pathname.match(/_(\d+)(?:\.htm|$)/);
-    if (slugMatch) {
-      return slugMatch[1];
+    const searchable = `${url.pathname}${url.search}`;
+    for (const pattern of RESOURCE_ID_PATTERNS) {
+      const match = searchable.match(pattern);
+      if (match) {
+        return match[1];
+      }
     }
   } catch {
     return "";
@@ -54,10 +58,12 @@ function setMessage(text, tone = "") {
   messageBar.className = tone ? `message ${tone}` : "message";
 }
 
-function isFreepikUrl(value) {
+function isSupportedResourceUrl(value) {
   try {
     const url = new URL(value);
-    return /(^|\.)freepik\.com$/i.test(url.hostname);
+    return SUPPORTED_RESOURCE_HOSTS.some(
+      (host) => url.hostname === host || url.hostname.endsWith(`.${host}`),
+    );
   } catch {
     return false;
   }
@@ -86,8 +92,8 @@ async function loadActiveTab() {
     <p class="tab-url">${escapeHtml(currentResourceUrl)}</p>
   `;
 
-  if (!isFreepikUrl(currentResourceUrl)) {
-    setMessage("Current tab is not a Freepik page.", "error");
+  if (!isSupportedResourceUrl(currentResourceUrl)) {
+    setMessage("Current tab is not a Freepik/Magnific page.", "error");
     confirmButton.disabled = true;
     return;
   }
@@ -123,12 +129,12 @@ saveButton.addEventListener("click", async () => {
 });
 
 async function downloadDirectly(resourceId, apiKey) {
-  setMessage("Fetching download link from Freepik...", "neutral");
+  setMessage("Fetching download link from Magnific...", "neutral");
   
   try {
-    const response = await fetch(`https://api.freepik.com/v1/resources/${resourceId}/download`, {
+    const response = await fetch(`https://api.magnific.com/v1/resources/${resourceId}/download`, {
       headers: {
-        "x-freepik-api-key": apiKey,
+        "x-magnific-api-key": apiKey,
         "Accept": "application/json"
       }
     });
@@ -172,7 +178,7 @@ confirmButton.addEventListener("click", async () => {
   const apiKey = stored[API_KEY_KEY];
 
   if (!apiKey) {
-    setMessage("Please enter and save your Freepik API Key first.", "error");
+    setMessage("Please enter and save your Magnific API Key first.", "error");
     apiKeyInput.focus();
     return;
   }

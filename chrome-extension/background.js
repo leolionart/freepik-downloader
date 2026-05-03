@@ -1,8 +1,8 @@
 async function fetchDownloadLink(resourceId, apiKey) {
   try {
-    const response = await fetch(`https://api.freepik.com/v1/resources/${resourceId}/download`, {
+    const response = await fetch(`https://api.magnific.com/v1/resources/${resourceId}/download`, {
       headers: {
-        "x-freepik-api-key": apiKey,
+        "x-magnific-api-key": apiKey,
         "Accept": "application/json"
       }
     });
@@ -10,30 +10,30 @@ async function fetchDownloadLink(resourceId, apiKey) {
     const data = await response.json();
 
     if (!response.ok) {
-      // Lấy thông báo lỗi trực tiếp từ Freepik API
+      // Lấy thông báo lỗi trực tiếp từ Magnific API
       const freepikError = data.message || data.error || data.detail || `HTTP ${response.status}`;
       
       if (response.status === 401 || response.status === 403) {
-        throw new Error(`Freepik Auth Error: "${freepikError}". Please verify your key at developer.freepik.com and ensure it has enough permissions.`);
+        throw new Error(`Magnific Auth Error: "${freepikError}". Please verify your key at magnific.com and ensure it has enough permissions.`);
       }
       if (response.status === 429) {
-        throw new Error(`Freepik Rate Limit: "${freepikError}". You are sending too many requests.`);
+        throw new Error(`Magnific Rate Limit: "${freepikError}". You are sending too many requests.`);
       }
       
-      throw new Error(`Freepik API Error: "${freepikError}"`);
+      throw new Error(`Magnific API Error: "${freepikError}"`);
     }
 
     const downloadUrl = data.data?.url || data.url || data.download_url;
     const filename = data.data?.filename || `freepik-${resourceId}.zip`;
 
     if (!downloadUrl) {
-      throw new Error("Freepik API success but no download URL found. You might have reached your daily limit.");
+      throw new Error("Magnific API success but no download URL found. You might have reached your daily limit.");
     }
 
     return { url: downloadUrl, filename };
   } catch (error) {
     if (error.message === "Failed to fetch") {
-      throw new Error("Network Error: Could not connect to api.freepik.com. Check your internet or VPN.");
+      throw new Error("Network Error: Could not connect to api.magnific.com. Check your internet or VPN.");
     }
     throw error;
   }

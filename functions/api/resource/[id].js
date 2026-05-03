@@ -9,7 +9,7 @@ import {
 export async function onRequestGet(context) {
   const apiKey = getFreepikApiKey(context.request);
   if (!apiKey) {
-    return getJsonError("Missing Freepik API key in local cookie.", 401);
+    return getJsonError("Missing Magnific API key in local cookie.", 401);
   }
 
   const resourceId = context.params.id;

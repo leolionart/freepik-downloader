@@ -20,7 +20,7 @@ function buildContentDisposition(filename) {
 export async function onRequestGet(context) {
   const apiKey = getFreepikApiKey(context.request);
   if (!apiKey) {
-    return getJsonError("Missing Freepik API key in local cookie.", 401);
+    return getJsonError("Missing Magnific API key in local cookie.", 401);
   }
 
   const resourceId = context.params.id;
@@ -45,7 +45,7 @@ export async function onRequestGet(context) {
 
   const download = pickDownload(result.payload);
   if (!download.url) {
-    return getJsonError("Freepik download URL is missing in the API response.", 502, result.payload);
+    return getJsonError("Magnific download URL is missing in the API response.", 502, result.payload);
   }
 
   if (incomingUrl.searchParams.get("redirect") === "1") {
@@ -55,7 +55,7 @@ export async function onRequestGet(context) {
   if (incomingUrl.searchParams.get("mode") === "file") {
     const fileResponse = await fetch(download.url);
     if (!fileResponse.ok || !fileResponse.body) {
-      return getJsonError("Không tải được file từ signed URL của Freepik.", 502);
+      return getJsonError("Không tải được file từ signed URL của Magnific.", 502);
     }
 
     const headers = new Headers();

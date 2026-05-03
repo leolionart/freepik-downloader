@@ -1,4 +1,4 @@
-const FREEPIK_API_BASE = "https://api.freepik.com/v1";
+const FREEPIK_API_BASE = "https://api.magnific.com/v1";
 const COOKIE_NAME = "freepik_api_key";
 
 function json(data, init = {}) {
@@ -59,7 +59,7 @@ export async function freepikFetch(pathname, apiKey, searchParams) {
 
   const response = await fetch(url.toString(), {
     headers: {
-      "x-freepik-api-key": apiKey,
+      "x-magnific-api-key": apiKey,
       accept: "application/json",
     },
   });
@@ -80,7 +80,7 @@ export async function freepikFetch(pathname, apiKey, searchParams) {
       payload?.message ||
       payload?.detail ||
       payload?.error ||
-      `Freepik API returned ${response.status}`;
+      `Magnific API returned ${response.status}`;
 
     return {
       ok: false,

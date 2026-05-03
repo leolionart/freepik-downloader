@@ -12,7 +12,7 @@
   <path d="M1072 314L1102 344" stroke="white" stroke-width="18" stroke-linecap="round"/>
   <circle cx="1063" cy="303" r="40" stroke="white" stroke-width="18"/>
   <text x="118" y="392" fill="white" font-family="Arial, sans-serif" font-size="68" font-weight="700">Freepik Downloader</text>
-  <text x="118" y="444" fill="#CBD5E1" font-family="Arial, sans-serif" font-size="28">Open the current Freepik tab, confirm, and route the download through your Pages app.</text>
+  <text x="118" y="444" fill="#CBD5E1" font-family="Arial, sans-serif" font-size="28">Open the current Magnific tab, confirm, and start the download.</text>
   <defs>
     <linearGradient id="paint0_linear_1_2" x1="72" y1="70" x2="1328" y2="490" gradientUnits="userSpaceOnUse">
       <stop stop-color="#2563EB"/>

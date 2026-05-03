@@ -1,5 +1,10 @@
 const API_KEY_KEY = "freepikApiKey";
 const DEFAULT_APP_URL = "https://freepik-downloader.pages.dev";
+const RESOURCE_ID_PATTERNS = [
+  /\/resources\/(\d+)(?:[/?#]|$)/i,
+  /(?:_|-|\/)(\d{4,})(?:\.htm|[/?#]|$)/i,
+  /[?&](?:id|resource_id|resource-id)=(\d+)/i,
+];
 
 function extractResourceId(input) {
   const value = (input || "").trim();
@@ -9,14 +14,12 @@ function extractResourceId(input) {
 
   try {
     const url = new URL(value);
-    const apiMatch = url.pathname.match(/\/resources\/(\d+)/);
-    if (apiMatch) {
-      return apiMatch[1];
-    }
-
-    const slugMatch = url.pathname.match(/_(\d+)(?:\.htm|$)/);
-    if (slugMatch) {
-      return slugMatch[1];
+    const searchable = `${url.pathname}${url.search}`;
+    for (const pattern of RESOURCE_ID_PATTERNS) {
+      const match = searchable.match(pattern);
+      if (match) {
+        return match[1];
+      }
     }
   } catch {
     return "";

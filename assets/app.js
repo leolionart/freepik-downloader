@@ -7,6 +7,11 @@ const ONE_YEAR_SECONDS = 60 * 60 * 24 * 365;
 const MAX_HISTORY_ITEMS = 50;
 const HISTORY_RETENTION_DAYS = 90;
 const HISTORY_RETENTION_MS = HISTORY_RETENTION_DAYS * 24 * 60 * 60 * 1000;
+const RESOURCE_ID_PATTERNS = [
+  /\/resources\/(\d+)(?:[/?#]|$)/i,
+  /(?:_|-|\/)(\d{4,})(?:\.htm|[/?#]|$)/i,
+  /[?&](?:id|resource_id|resource-id)=(\d+)/i,
+];
 
 const apiKeyInput = document.querySelector("#apiKeyInput");
 const keyBadge = document.querySelector("#keyBadge");
@@ -59,7 +64,7 @@ function setMessage(text, tone = "neutral") {
 }
 
 function extractResourceId(input) {
-  const value = input.trim();
+  const value = (input || "").trim();
   if (!value) {
     return "";
   }
@@ -70,14 +75,12 @@ function extractResourceId(input) {
 
   try {
     const url = new URL(value);
-    const apiMatch = url.pathname.match(/\/resources\/(\d+)/);
-    if (apiMatch) {
-      return apiMatch[1];
-    }
-
-    const slugMatch = url.pathname.match(/_(\d+)(?:\.htm|$)/);
-    if (slugMatch) {
-      return slugMatch[1];
+    const searchable = `${url.pathname}${url.search}`;
+    for (const pattern of RESOURCE_ID_PATTERNS) {
+      const match = searchable.match(pattern);
+      if (match) {
+        return match[1];
+      }
     }
   } catch {
     const genericMatch = value.match(/(\d{6,})/);
@@ -558,7 +561,7 @@ async function analyzeList() {
 
 async function analyzeListWithOptions(options = {}) {
   if (!getCookie(COOKIE_NAME)) {
-    setMessage("Bạn cần cấu hình Freepik API key trong Settings trước.", "error");
+    setMessage("Bạn cần cấu hình Magnific API key trong Settings trước.", "error");
     openSettings();
     return { readyCount: 0, totalCount: 0, invalidCount: 0 };
   }
@@ -747,7 +750,7 @@ closeSettingsButton.addEventListener("click", closeSettings);
 saveKeyButton.addEventListener("click", () => {
   const value = apiKeyInput.value.trim();
   if (!value) {
-    setMessage("Nhập Freepik API key trước khi lưu.", "error");
+    setMessage("Nhập Magnific API key trước khi lưu.", "error");
     return;
   }
 
